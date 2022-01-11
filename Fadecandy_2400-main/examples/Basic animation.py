@@ -39,3 +39,4 @@ while led < 60:#scroll all rows at the same time
     client.put_pixels(leds)
     time.sleep(.1)
     led = led + 1
+
