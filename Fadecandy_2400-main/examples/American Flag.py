@@ -15,6 +15,8 @@ led = 0
 while led < 60: #scroll all rows at the same time
     for rows in range (1): #first row red 
         leds[led + rows * 60] = (255,0,0)
+        if (led == 2 and rows == 1):
+            led__list[led + row *60] = (0,0,255)
     for rows in range (1,2):#last three rows reversed (righty to left )
         leds[59 - led + rows*60] = (255,255,255)
     for rows in range (2,3): #first three rows left to right
