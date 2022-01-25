@@ -27,11 +27,15 @@ def question(client, total_strips=6, leds_per_strip=60):
 
   ##'''.split('\n')
     ])
+    # set pixels based on character
     pixels = [(255, 0, 0) if c == '#' else (0, 0, 0) for c in qmark]
+    # empty pixels
     empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
     while True:
+        # question mark
         client.put_pixels(pixels, channel=0)
         time.sleep(0.5)
+        # empty space
         client.put_pixels(empty, channel=0)
         time.sleep(0.5)
 

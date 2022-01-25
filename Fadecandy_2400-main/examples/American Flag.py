@@ -1,33 +1,51 @@
 import opc
 import time
-import random
 
-leds = [(192,192,192)]*360 #silver
-
-client = opc.Client('localhost:7890')
-client.put_pixels(leds)
-client.put_pixels(leds)
-
-#Animation 2
+total_strips = 6
+leds_per_strip = 60
+address = 'localhost:7890'
 
 
-led = 0
-while led < 60: #scroll all rows at the same time
-    for rows in range (1): #first row red 
-        leds[led + rows * 60] = (255,0,0)
-        if (led == 2 and rows == 1):
-            led__list[led + row *60] = (0,0,255)
-    for rows in range (1,2):#last three rows reversed (righty to left )
-        leds[59 - led + rows*60] = (255,255,255)
-    for rows in range (2,3): #first three rows left to right
-        leds[led + rows * 60] = (255,0,0)
-    for rows in range (3,4):#last three rows reversed (righty to left )
-        leds[59 - led + rows*60] = (255,255,255)
-    for rows in range (4,5): #first three rows left to right
-        leds[led + rows * 60] =  (255,0,0)
-    for rows in range (5,6):#last three rows reversed (righty to left )
-        leds[59 - led + rows*60] = (255,255,255)
-    client.put_pixels(leds)
-    time.sleep(0.1)
-    led = led + 1
+def flag(client, total_strips=6, leds_per_strip=60):
+    # the flag
+    f = [
+        s.center(leds_per_strip) for s in '''******.....................
+******---------------------
+******.....................
+---------------------------
+...........................
+---------------------------'''.split('\n')
+    ]
+    # the current round
+    r = 0
+    while True:
+        pixels = []
+        # increase round
+        r += 1
+        for line in f:
+            for i, c in enumerate(line):
+                # adjust color intensity each round
+                i = (i - r) % 60
+                # depending on the character set the color
+                if c == '*':
+                    p = (0, 0, 100 + i * 2)
+                elif c == '.':
+                    p = (100 + i * 2, 0, 0)
+                elif c == '-':
+                    p = (100 + i * 2, 100 + i * 2, 100 + i * 2)
+                else:
+                    p = (0, 0, 0)
+                pixels.append(p)
+        # set the leds and sleep for 0.02 seconds.
+        client.put_pixels(pixels, channel=0)
+        time.sleep(0.02)
 
+
+def main():
+    client = opc.Client(address)
+    print('Connected' if client.can_connect() else 'Not connected')
+    flag(client, total_strips, leds_per_strip)
+
+
+if __name__ == '__main__':
+    main()
