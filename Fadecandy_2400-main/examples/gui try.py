@@ -17,7 +17,7 @@ def start():
 
 btn = tk.Button(window, text="Are you ready to start the quiz ?", bg="green", fg="orange" ,command=start)
 btn.place(x=80, y=100)
-pack_forget()
+
 
 txtfld=tk.Entry(window, text="Country typed in here", bd=5)
 txtfld.place(x=100, y=170)
