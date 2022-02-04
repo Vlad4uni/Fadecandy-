@@ -1,12 +1,23 @@
 import tkinter as tk
-from threading import Thread
 import opc
 from animations import *
+
+from multiprocessing import Process
+from threading import Thread
+
+
+def animate(process, animation_func, client):
+    if process:
+        process.terminate()
+    clear(client)
+    process = Process(target=animation_func, args=(client, ))
+    process.start()
+    return process
 
 
 def main():
     client = opc.Client('localhost:7890')
-    thread = Thread(target=lambda: None)
+    animation_process = None
     window = tk.Tk()
     window.title('Welcome to Vlad\'s World quiz')
     window.geometry('450x200')
@@ -47,16 +58,17 @@ def main():
         lbl_reply.place(x=50, y=10)
 
         # show countries
+        animate(animation_process, flags, client)
 
-        thread = Thread(target=lambda: flags(client))
-        thread.start()
+        def end_animation():
+            time.sleep(20)
+            var_lbl_reply.set('Thank you for participating in this quiz.')
+            animate(animation_process, end, client)
+            time.sleep(5)
+            reset()
 
-        time.sleep(1)
-        var_lbl_reply.set('Thank you for participating in this quiz.')
-
-        # final animation
-        time.sleep(1)
-        reset()
+        # play final animation
+        Thread(target=end_animation).start()
 
     def reset():
         btn_enter.place_forget()
@@ -69,8 +81,7 @@ def main():
         btn_ready.configure(text='Try again')
         btn_ready.place(x=50, y=100)
 
-        thread = Thread(target=lambda: globe(client))
-        thread.start()
+        animate(animation_process, globe, client)
 
     def start():
         btn_ready.place_forget()
@@ -79,16 +90,12 @@ def main():
         btn_enter.place(x=50, y=150)
         txt_answer.place(x=50, y=100)
 
-        thread = Thread(target=lambda: question(client))
-        thread.start()
+        animate(animation_process, question, client)
 
     btn_enter.config(command=submit_answer)
     btn_ready.config(command=start)
 
     lbl_main.place(x=50, y=10)
-    # btn_ready.place(x=50, y=50)
-    # btn_enter.place(x=50, y=100)
-    # txt_answer.place(x=50, y=150)
 
     reset()
     btn_ready.configure(text='Are you ready to start the quiz?')
