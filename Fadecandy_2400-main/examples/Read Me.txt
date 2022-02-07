@@ -1,0 +1,316 @@
+PDE 2400 -Projects 2
+Vladislav Trayanov MDX002-oe020202
+
+
+######################Final GUI############################
+import tkinter as tk
+import opc
+from animations import *
+
+from multiprocessing import Process
+from threading import Thread
+
+#function that i can call upon once it comes time to create an animation
+def animate(process, animation_func, client):
+    if process:
+        process.terminate()
+    clear(client)
+    process = Process(target=animation_func, args=(client, ))
+    process.start()
+    return process
+
+
+def main():
+    client = opc.Client('localhost:7890')
+    animation_process = None
+    window = tk.Tk()
+    window.title('Welcome to Vlad\'s World quiz')
+    window.geometry('450x200')# size of Tkinter box
+
+    var_lbl_main = tk.StringVar()
+    lbl_main = tk.Label(textvariable=var_lbl_main,
+                        font=('Arial', 18),
+                        justify=tk.CENTER, #setting the size and locatiion of 
+                        width=25,
+                        height=2,
+                        bg='blue')
+
+    txt_answer = tk.Entry()
+    btn_ready = tk.Button(text='Are you ready to start the quiz?')
+    btn_enter = tk.Button(text='Enter')
+
+    var_lbl_reply = tk.StringVar()
+    lbl_reply = tk.Label(textvariable=var_lbl_reply,
+                         font=('Arial', 12),
+                         justify=tk.CENTER,
+                         width=40,
+                         height=3,
+                         bg='blue',
+                         wraplength=350)
+
+    def submit_answer():
+        answer = txt_answer.get().lower()
+        if answer in ['bulgaria', 'america', 'spain']:# checks the users input against the three countries that I have entered to be my favourite countries
+            var_lbl_reply.set(
+                'How amazing is that, we have matching tastes when it comes to countries, these are my favorite countries: ' # response if the country appears to be one of my favourite three
+            )
+        else:
+            var_lbl_reply.set(
+                'It appears that we do not have the same taste when it comes to countries, these are my favourite countries' # response if the country appears not to be one of my favourite three
+            )
+
+        lbl_main.place_forget()
+        lbl_reply.place(x=50, y=10)
+
+        # at the same time the appropriate text appears on the Tkinter window , the 3 animations for the countries will begin in the simulations window
+        animate(animation_process, flags, client)
+
+        def end_animation():#end of participation notice appears on Tkinter while the end animation plays at the same time 
+            time.sleep(20)
+            var_lbl_reply.set('Thank you for participating in this quiz.')
+            animate(animation_process, end, client)
+            time.sleep(5)
+            reset()
+
+        # play final animation
+        Thread(target=end_animation).start()
+
+    def reset(): #overall reset of both Tkinter window and the simulation window
+        btn_enter.place_forget() 
+        txt_answer.place_forget()
+        lbl_reply.place_forget()
+#previous buttons disapear and new buttons appear (initial buttons)
+        var_lbl_main.set('Hello')
+        lbl_main.place(x=50, y=10)
+
+        btn_ready.configure(text='Try again')#for the process to start again the user has to press this button because otherwise the process will just stop here and wait for a human response
+        btn_ready.place(x=50, y=100)
+
+        animate(animation_process, globe, client) #similar to the Tkinter window , the animations that appear in the simulation window are also all reset 
+                                                                                  #therefore  the animations cycle begins again with the globe 
+    def start():
+        btn_ready.place_forget()
+
+        var_lbl_main.set('What is your favorite country?')
+        btn_enter.place(x=50, y=150)
+        txt_answer.place(x=50, y=100)
+
+        animate(animation_process, question, client)
+
+    btn_enter.config(command=submit_answer)
+    btn_ready.config(command=start)
+
+    lbl_main.place(x=50, y=10)
+
+    reset()
+    btn_ready.configure(text='Are you ready to start the quiz?')
+    window.mainloop()
+
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+
+########################Animations##################
+#All the different animatiions are gathered in this file so that it can act as a library for me to recall them in the GUI file above .
+# To create my animatiions I used a variation of methods to create the six designs .
+
+import opc
+import time
+
+total_strips = 6
+leds_per_strip = 60
+address = 'localhost:7890'
+
+
+def question(client, total_strips=6, leds_per_strip=60):
+    # the question mark art
+    qmark = ''.join([
+        s.center(leds_per_strip) for s in '''######
+##  ##
+    ##
+  ##
+
+  ##'''.split('\n')
+    ])
+    # set pixels based on character
+    pixels = [(255, 0, 0) if c == '#' else (0, 0, 0) for c in qmark]
+    # empty pixels
+    empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
+    # run animation
+    for _ in range(3):
+        # question mark
+        client.put_pixels(pixels, channel=0)
+        time.sleep(0.5)
+        # empty
+        client.put_pixels(empty, channel=0)
+        time.sleep(0.5)
+
+
+def globe(client, total_strips=6, leds_per_strip=60):
+    # the globe
+    g = ''.join([
+        s.center(leds_per_strip) for s in '''   .##.
+   #....##.
+  #....###..
+  .#...##...
+   ##....#.
+   ##..'''.split('\n')
+    ])
+
+    # empty pixels
+    empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
+    pixels = []
+    for c in g:
+        # add pixels depending on character
+        if c == '#':
+            pixels.append((0, 255, 0))
+        elif c == '.':
+            pixels.append((0, 0, 255))
+        else:
+            pixels.append((0, 0, 0))
+
+    # run animation
+    for _ in range(3):
+        # colors
+        client.put_pixels(pixels, channel=0)
+        time.sleep(0.5)
+        # empty
+        client.put_pixels(empty, channel=0)
+        time.sleep(0.5)
+
+
+def american_flag(client, total_strips=6, leds_per_strip=60):
+    # the flag
+    f = [
+        s.center(leds_per_strip) for s in '''******.....................
+******---------------------
+******.....................
+---------------------------
+...........................
+---------------------------'''.split('\n')
+    ]
+    # the current round
+    r = 0
+    for i in range(120):
+        pixels = []
+        # increase round
+        r += 1
+        for line in f:
+            for i, c in enumerate(line):
+                # adjust color intensity each round
+                i = (i - r) % 60
+                # depending on the character set the color
+                if c == '*':
+                    p = (0, 0, 100 + i * 2)
+                elif c == '.':
+                    p = (100 + i * 2, 0, 0)
+                elif c == '-':
+                    p = (100 + i * 2, 100 + i * 2, 100 + i * 2)
+                else:
+                    p = (0, 0, 0)
+                pixels.append(p)
+        # set the leds and sleep for 0.02 seconds.
+        client.put_pixels(pixels, channel=0)
+        time.sleep(0.02)
+
+
+def bulgarian_flag(client, total_strips=6, leds_per_strip=60):
+    leds = [(192, 192, 192)] * 360  #silver
+    client.put_pixels(leds)
+    client.put_pixels(leds)
+    led = 0
+    while led < 60:  #scroll all rows at the same time
+        for rows in range(2):  #first two rows left to right
+            leds[led + rows * 60] = (255, 255, 255)
+        for rows in range(2, 4):  #the next two row go inwards - right to left
+            leds[59 - led + rows*60] = (34,139,34)
+        for rows in range(4, 6):  #last two rows travel from the left to the right
+            leds[led + rows * 60] = (255, 0, 0)
+        client.put_pixels(leds)
+        time.sleep(0.1)
+        led = led + 1
+
+
+def spanish_flag(client, total_strips=6, leds_per_strip=60):
+    leds = [(192, 192, 192)] * 360  #silver
+    client.put_pixels(leds)
+    client.put_pixels(leds)
+    led = 0
+    while led < 60:  #scroll all rows at the same time
+        for rows in range(2):  #first three rows left to right
+            leds[led + rows * 60] = (255, 0, 0)
+        for rows in range(2, 4):  #first three rows left to right
+            leds[led + rows * 60] = (255, 255, 0)
+        for rows in range(4, 6):  #first three rows left to right
+            leds[led + rows * 60] = (255, 0, 0)
+        client.put_pixels(leds)
+        time.sleep(0.1)
+        led = led + 1
+
+
+def flags(client):
+    empty = [(0, 0, 0)] * 360
+    american_flag(client)
+    client.put_pixels(empty)
+    time.sleep(1)
+    bulgarian_flag(client)
+    client.put_pixels(empty)
+    time.sleep(1)
+    spanish_flag(client)
+    client.put_pixels(empty)
+    time.sleep(1)
+
+
+def end(client):
+    colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 0, 255),
+              (0, 255, 255), (255, 255, 0)]
+
+    pattern = [[
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 4, 0, 0, 3, 3, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ],
+               [
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 3, 0, 2, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+               ],
+               [
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 4, 3, 2, 1, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+               ],
+               [
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 4, 3, 2, 1, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+               ],
+               [
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 3, 0, 2, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+               ],
+               [
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 4, 0, 0, 3, 3, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+               ]]
+
+    pattern = [j for sub in pattern for j in sub]
+
+    for i in range(3):
+        for i in range(1, 5):
+            pixels = [colors[x] if i >= x else (0, 0, 0) for x in pattern]
+            client.put_pixels(pixels, channel=0)
+            time.sleep(0.3)
+
+
+def clear(client):
+    empty = [(0, 0, 0)] * 360
+    client.put_pixels(empty, channel=0)
