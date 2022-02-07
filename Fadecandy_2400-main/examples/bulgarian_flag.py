@@ -15,7 +15,7 @@ while led < 60:#scroll all rows at the same time
     for rows in range (2): #first three rows left to right
         leds[led + rows * 60] = (255,255,255)
     for rows in range (2,4): #first three rows left to right
-        leds[led + rows * 60] = (34,139,34)
+        leds[59 - led + rows*60] = (34,139,34)
     for rows in range (4,6): #first three rows left to right
         leds[led + rows * 60] = (255,0,0)
     client.put_pixels(leds)
