@@ -7,12 +7,17 @@ from threading import Thread
 
 #function that i can call upon once it comes time to create an animation
 def animate(process, animation_func, client):
+    '''Play the given animation.'''
+    # If there's already an animation playing, terminate that.
     if process:
         process.terminate()
+    # send empty pattern
     clear(client)
+    # start the new animation on a new process.
     process = Process(target=animation_func, args=(client, ))
     process.start()
     return process
+
 
 
 def main():
@@ -22,6 +27,7 @@ def main():
     window.title('Welcome to Vlad\'s World quiz')
     window.geometry('450x200')# size of Tkinter box
 
+    # The main label
     var_lbl_main = tk.StringVar()
     lbl_main = tk.Label(textvariable=var_lbl_main,
                         font=('Arial', 18),
@@ -30,10 +36,22 @@ def main():
                         height=2,
                         bg='blue')
 
+    # The tooltip for the text input.
+    lbl_tooltip = tk.Label(
+        text=
+        'Input should be in all uppercase letters\nand no other characters are allowed.',
+        font=('Arial', 8),
+        justify=tk.LEFT,
+        width=55,
+        height=2,
+        bg='gray')
+
+    # Answer text input and buttons.
     txt_answer = tk.Entry()
     btn_ready = tk.Button(text='Are you ready to start the quiz?')
     btn_enter = tk.Button(text='Enter')
 
+    # Reply label.
     var_lbl_reply = tk.StringVar()
     lbl_reply = tk.Label(textvariable=var_lbl_reply,
                          font=('Arial', 12),
@@ -43,24 +61,42 @@ def main():
                          bg='blue',
                          wraplength=350)
 
+    def check_answer(answer):
+        '''Check if the given answer is all caps and only letters.'''
+        if not answer:
+            return False
+        for c in answer:
+            if c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ':
+                return False
+        return True
+
+
+
     def submit_answer():
-        answer = txt_answer.get().lower()
-        if answer in ['bulgaria', 'america', 'spain']:# checks the users input against the three countries that I have entered to be my favourite countries
+        '''Submit a given answer'''
+        answer = txt_answer.get()
+        # do nothing if the answer is not in the correct format.
+        if not check_answer(answer):
+            return
+        # Show reply according to the given country.
+        if answer in ['BULGARIA', 'AMERICA', 'SPAIN']:# checks the users input against the three countries that I have entered to be my favourite countries
             var_lbl_reply.set(
-                'How amazing is that, we have matching tastes when it comes to countries, these are my favorite countries: ' # response if the country appears to be one of my favourite three
+                'How amazing is that, we have matching tastes when it comes to countries, these are my favorite countries: '
             )
         else:
             var_lbl_reply.set(
-                'It appears that we do not have the same taste when it comes to countries, these are my favourite countries' # response if the country appears not to be one of my favourite three
+                'It appears that we do not have the same taste when it comes to countries, these are my favourite countries'
             )
 
+        # Show reply.
         lbl_main.place_forget()
         lbl_reply.place(x=50, y=10)
 
-        # at the same time the appropriate text appears on the Tkinter window , the 3 animations for the countries will begin in the simulations window
+        # show countries
         animate(animation_process, flags, client)
 
-        def end_animation():#end of participation notice appears on Tkinter while the end animation plays at the same time 
+        def end_animation():#end of participation notice appears on Tkinter while the end animation plays at the same time
+            '''The end animation sequence.'''
             time.sleep(20)
             var_lbl_reply.set('Thank you for participating in this quiz.')
             animate(animation_process, end, client)
@@ -71,6 +107,7 @@ def main():
         Thread(target=end_animation).start()
 
     def reset(): #overall reset of both Tkinter window and the simulation window
+        '''Reset the state of the GUI.'''
         btn_enter.place_forget() 
         txt_answer.place_forget()
         lbl_reply.place_forget()
@@ -84,6 +121,7 @@ def main():
         animate(animation_process, globe, client) #similar to the Tkinter window , the animations that appear in the simulation window are also all reset 
                                                                                   #therefore  the animations cycle begins again with the globe 
     def start():
+        '''Start a new session.'''
         btn_ready.place_forget()
 
         var_lbl_main.set('What is your favorite country?')
