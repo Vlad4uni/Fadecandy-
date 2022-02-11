@@ -19,7 +19,6 @@ def animate(process, animation_func, client):
     return process
 
 
-
 def main():
     client = opc.Client('localhost:7890')
     animation_process = None
@@ -31,7 +30,7 @@ def main():
     var_lbl_main = tk.StringVar()
     lbl_main = tk.Label(textvariable=var_lbl_main,
                         font=('Arial', 18),
-                        justify=tk.CENTER, #setting the size and locatiion of 
+                        justify=tk.CENTER,
                         width=25,
                         height=2,
                         bg='blue')
@@ -62,15 +61,13 @@ def main():
                          wraplength=350)
 
     def check_answer(answer):
-        '''Check if the given answer is all caps and only letters.'''
+        '''Check if the given answer is all caps.'''
         if not answer:
             return False
         for c in answer:
             if c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ':
                 return False
         return True
-
-
 
     def submit_answer():
         '''Submit a given answer'''
@@ -108,9 +105,10 @@ def main():
 
     def reset(): #overall reset of both Tkinter window and the simulation window
         '''Reset the state of the GUI.'''
-        btn_enter.place_forget() 
+        btn_enter.place_forget()
         txt_answer.place_forget()
         lbl_reply.place_forget()
+        lbl_tooltip.place_forget()
 #previous buttons disapear and new buttons appear (initial buttons)
         var_lbl_main.set('Hello')
         lbl_main.place(x=50, y=10)
@@ -118,8 +116,9 @@ def main():
         btn_ready.configure(text='Try again')#for the process to start again the user has to press this button because otherwise the process will just stop here and wait for a human response
         btn_ready.place(x=50, y=100)
 
-        animate(animation_process, globe, client) #similar to the Tkinter window , the animations that appear in the simulation window are also all reset 
+        animate(animation_process, globe, client)#similar to the Tkinter window , the animations that appear in the simulation window are also all reset
                                                                                   #therefore  the animations cycle begins again with the globe 
+
     def start():
         '''Start a new session.'''
         btn_ready.place_forget()
@@ -127,6 +126,7 @@ def main():
         var_lbl_main.set('What is your favorite country?')
         btn_enter.place(x=50, y=150)
         txt_answer.place(x=50, y=100)
+        lbl_tooltip.place(x=50, y=120)
 
         animate(animation_process, question, client)
 
