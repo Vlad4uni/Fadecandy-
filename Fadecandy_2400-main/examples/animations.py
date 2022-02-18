@@ -55,7 +55,7 @@ def globe(client, total_strips=6, leds_per_strip=60):
             pixels.append((0, 0, 0))
 
     # run animation
-    for _ in range(6):
+    for _ in range(4):
         # colors
         client.put_pixels(pixels, channel=0)
         time.sleep(0.5)
