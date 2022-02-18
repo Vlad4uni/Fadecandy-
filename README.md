@@ -12,10 +12,11 @@ For the user to be able to run my program they must have the following libraries
 To be able to see the LED strips produce an animation the user must have the appropriate simulator version based on their operating system.
 
 Once the libraries and simulator are downloaded and are operational the user is now clear to run the program .
+If the animations do not begin straight away once the Final GUI is ran then  the user should test run the animations file and run the Final GUI file again.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When the user runs the code a Tkinter window will open while an animation with a globe will appear in the screen of the simulator.
+When the user runs the "Final GUI" file a Tkinter window will open while an animation with a globe will appear in the screen of the simulator.
 In the Tkinter window there will be a blue label located in the middle of the screen saying "Hello" ,
 Right below the hello label there is a buton that can be pressed once the user is ready to start the quiz .
 
