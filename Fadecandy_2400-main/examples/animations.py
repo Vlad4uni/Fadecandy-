@@ -21,7 +21,7 @@ def question(client, total_strips=6, leds_per_strip=60):
     # empty pixels
     empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
     # run animation
-    for _ in range(3):
+    for _ in range(6):
         # question mark
         client.put_pixels(pixels, channel=0)
         time.sleep(0.5)
@@ -55,7 +55,7 @@ def globe(client, total_strips=6, leds_per_strip=60):
             pixels.append((0, 0, 0))
 
     # run animation
-    for _ in range(3):
+    for _ in range(6):
         # colors
         client.put_pixels(pixels, channel=0)
         time.sleep(0.5)
@@ -124,13 +124,13 @@ def spanish_flag(client, total_strips=6, leds_per_strip=60):
     for i in range(60):
         leds[i] = (255, 0, 0)
     client.put_pixels(leds)
-    time.sleep(0.3)
+    time.sleep(0.8)
 
     # light the second line in red
     for i in range(60, 120):
         leds[i] = (255, 0, 0)
     client.put_pixels(leds)
-    time.sleep(0.3)
+    time.sleep(0.8)
 
     # light the third line in yellow
     for i in range(120, 180):
@@ -142,18 +142,19 @@ def spanish_flag(client, total_strips=6, leds_per_strip=60):
     for i in range(180, 240):
         leds[i] = (255, 255, 0)
     client.put_pixels(leds)
-    time.sleep(0.3)
+    time.sleep(0.8)
 
     # light the fifth line in red
     for i in range(240, 300):
         leds[i] = (255, 0, 0)
     client.put_pixels(leds)
-    time.sleep(0.3)
+    time.sleep(0.8)
 
     # light the sixth line in red
     for i in range(300, 360):
         leds[i] = (255, 0, 0)
     client.put_pixels(leds)
+    time.sleep(0.8)
 
 
 
@@ -211,7 +212,7 @@ def end(client):
     pattern = [j for sub in pattern for j in sub]
 
     # run the animation
-    for i in range(3):
+    for i in range(6):
         for i in range(1, 5):
             # if the color is more than the current cycle light it up.
             pixels = [colors[x] if i >= x else (0, 0, 0) for x in pattern]
