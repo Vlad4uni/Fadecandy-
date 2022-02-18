@@ -6,29 +6,6 @@ leds_per_strip = 60
 address = 'localhost:7890'
 
 
-def question(client, total_strips=6, leds_per_strip=60):
-    # the question mark art
-    qmark = ''.join([
-        s.center(leds_per_strip) for s in '''######
-##  ##
-    ##
-  ##
-
-  ##'''.split('\n')
-    ])
-    # set pixels based on character
-    pixels = [(255, 0, 0) if c == '#' else (0, 0, 0) for c in qmark]
-    # empty pixels
-    empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
-    # run animation
-    for _ in range(6):
-        # question mark
-        client.put_pixels(pixels, channel=0)
-        time.sleep(0.5)
-        # empty
-        client.put_pixels(empty, channel=0)
-        time.sleep(0.5)
-
 
 def globe(client, total_strips=6, leds_per_strip=60):
     # the globe
@@ -63,6 +40,28 @@ def globe(client, total_strips=6, leds_per_strip=60):
         client.put_pixels(empty, channel=0)
         time.sleep(0.5)
 
+def question(client, total_strips=6, leds_per_strip=60):
+    # the question mark art
+    qmark = ''.join([
+        s.center(leds_per_strip) for s in '''######
+##  ##
+    ##
+  ##
+
+  ##'''.split('\n')
+    ])
+    # set pixels based on character
+    pixels = [(255, 0, 0) if c == '#' else (0, 0, 0) for c in qmark]
+    # empty pixels
+    empty = [(0, 0, 0) for _ in range(total_strips * leds_per_strip)]
+    # run animation
+    for _ in range(6):
+        # question mark
+        client.put_pixels(pixels, channel=0)
+        time.sleep(0.5)
+        # empty
+        client.put_pixels(empty, channel=0)
+        time.sleep(0.5)
 
 def american_flag(client, total_strips=6, leds_per_strip=60):
     # the flag
@@ -212,7 +211,7 @@ def end(client):
     pattern = [j for sub in pattern for j in sub]
 
     # run the animation
-    for i in range(6):
+    for i in range(3):
         for i in range(1, 5):
             # if the color is more than the current cycle light it up.
             pixels = [colors[x] if i >= x else (0, 0, 0) for x in pattern]

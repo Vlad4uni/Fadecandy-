@@ -96,7 +96,7 @@ def main():
 
         def end_animation():#end of participation notice appears on Tkinter while the end animation plays at the same time
             '''The end animation sequence.'''
-            time.sleep(20)
+            time.sleep(19)
             var_lbl_reply.set('Thank you for participating in this quiz.')
             animate(animation_process, end, client)
             time.sleep(5)
