@@ -18,7 +18,7 @@ def animate(process, animation_func, client):
     process.start()
     return process
 
-
+########################################################################## MAIN PART SECTION ###################################################################################################
 def main():
     client = opc.Client('localhost:7890')
     animation_process = None
@@ -59,6 +59,8 @@ def main():
                          height=3,
                          bg='blue',
                          wraplength=350)
+
+############################################################################## ANSWER SECTION ##################################################################################################
 
     def check_answer(answer):
         '''Check if the given answer is all caps.'''
@@ -102,6 +104,8 @@ def main():
 
         # play final animation
         Thread(target=end_animation).start()
+
+######################################################################### RESET & REBOOT SECTION ################################################################################################
 
     def reset(): #overall reset of both Tkinter window and the simulation window
         '''Reset the state of the GUI.'''
